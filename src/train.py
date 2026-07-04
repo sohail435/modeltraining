@@ -1,30 +1,54 @@
 import os
 import joblib
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.pipeline import Pipeline
+from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.model_selection import RandomizedSearchCV
-from data_prep import get_and_split_data
+from data_prep import get_and_split_data, get_processing_pipeline
 
-def train_and_save_model():
-    # 1. Get the cleaned data
+def train_and_save_pipeline():
+    # 1. Fetch data arrays
     X_train, X_test, y_train, y_test = get_and_split_data()
     
-    # 2. Set up the Random Search
-    print("3. Tuning the model...")
-    rf = RandomForestClassifier(random_state=42)
-    param_distributions = {'n_estimators': [50, 100, 200], 'max_depth': [5, 10, 20]}
+    # 2. Get the preprocessing lanes
+    preprocessor = get_processing_pipeline()
     
-    search = RandomizedSearchCV(rf, param_distributions, n_iter=3, cv=3, random_state=42)
+    # 3. Create the unified master pipeline
+    # This combines features engineering + model into a single engine
+    full_pipeline = Pipeline(steps=[
+        ('preprocessor', preprocessor),
+        ('classifier', HistGradientBoostingClassifier(random_state=42))
+    ])
+    
+    # 4. Set up hyperparameter tuning for components INSIDE the pipeline
+    # Note the syntax: componentName__parameterName
+    print("3. Optimization engine spinning up...")
+    param_distributions = {
+        'classifier__max_iter': [50, 100, 150],
+        'classifier__max_depth': [3, 5, 10],
+        'classifier__learning_rate': [0.01, 0.1, 0.2]
+    }
+    
+    search = RandomizedSearchCV(
+        full_pipeline, 
+        param_distributions, 
+        n_iter=5, 
+        cv=3, 
+        scoring='roc_auc', 
+        random_state=42
+    )
+    
+    print("4. Fitting unified pipeline across search space...")
     search.fit(X_train, y_train)
     
-    # 3. Extract the winner
-    best_model = search.best_estimator_
-    print(f"4. Best hyperparameters found: {search.best_params_}")
+    best_pipeline = search.best_estimator_
+    print(f"5. Optimized hyper-parameters found: {search.best_params_}")
+    print(f"   Best Cross-Validation ROC-AUC Score: {search.best_score_:.4f}")
     
-    # 4. SAVE THE MODEL
+    # 5. Save the entire operational structure safely
     os.makedirs("models", exist_ok=True)
-    model_path = "models/random_forest_v1.joblib"
-    joblib.dump(best_model, model_path)
-    print(f"5. Model saved successfully to {model_path}")
+    pipeline_path = "models/saas_churn_pipeline_v1.joblib"
+    joblib.dump(best_pipeline, pipeline_path)
+    print(f"6. Full production pipeline successfully saved to: {pipeline_path}")
 
 if __name__ == "__main__":
-    train_and_save_model()
+    train_and_save_pipeline()
