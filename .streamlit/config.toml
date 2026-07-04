@@ -1,0 +1,6 @@
+[theme]
+primaryColor = "#FF6B35"      # Vibrant accent color for buttons and tabs
+backgroundColor = "#0F172A"   # Deep, dark blue slate background
+secondaryBackgroundColor = "#1E293B" # Slightly lighter card/input background
+textColor = "#F8FAFC"         # Crisp, highly readable off-white text
+font = "sans serif"
