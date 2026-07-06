@@ -17,7 +17,7 @@ jobs:
     - name: Set up Python 3.11 Runtime
       uses: actions/setup-python@v5
       with:
-        python-node-version: '3.11'
+        python-version: '3.11'
         cache: 'pip'
 
     - name: Install Project Dependencies
@@ -27,10 +27,9 @@ jobs:
 
     - name: Run Application Integrity Check
       run: |
-        # Checks if app.py can parse and load imports without compilation or syntax errors
         python -m py_compile app.py
 
-docker-build-verification:
+  docker-build-verification:
     runs-on: ubuntu-latest
     needs: code-quality-and-test
 
@@ -40,5 +39,4 @@ docker-build-verification:
 
     - name: Verify Dockerfile Build Compilation
       run: |
-        # Natively compiles the Docker image to verify the instructions are structurally sound
         docker build -t saas-churn-app:test .
