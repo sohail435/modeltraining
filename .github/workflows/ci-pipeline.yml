@@ -30,7 +30,7 @@ jobs:
         # Checks if app.py can parse and load imports without compilation or syntax errors
         python -m py_compile app.py
 
-  docker-build-verification:
+docker-build-verification:
     runs-on: ubuntu-latest
     needs: code-quality-and-test
 
@@ -38,10 +38,7 @@ jobs:
     - name: Checkout Code Repository
       uses: actions/checkout@v4
 
-    - name: Set up Docker Buildx Engine
-      uses: actions/setup-docker@v4
-
     - name: Verify Dockerfile Build Compilation
       run: |
-        # Compiles the Docker image to verify the instructions are structurally sound
+        # Natively compiles the Docker image to verify the instructions are structurally sound
         docker build -t saas-churn-app:test .
