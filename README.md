@@ -1,4 +1,14 @@
-# 📊 SaaS Customer Churn & Retention Intelligence Engine (v1.3.0)
+---
+title: SaaS Churn and Retention Engine
+emoji: 📈
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 8501
+---
+
+## SaaS Churn & Retention Engine Portfolio Piece
+Automated MLOps evaluation and deployment pipeline.# 📊 SaaS Customer Churn & Retention Intelligence Engine (v1.3.0)
 
 A production-grade machine learning micro-application designed to evaluate customer telemetry, predict account churn risk probabilities, and isolate behavioral risk factors before cancellations occur.
 
