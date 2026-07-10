@@ -56,22 +56,14 @@ jobs:
         fetch-depth: 0
         lfs: true
 
-    - name: Install and Pull Git LFS Objects
+    - name: Configure Git Credentials and Force Push
       run: |
-        git lfs install
-        git lfs pull
-
-    - name: Native Git Push Sync to Hugging Face
-      env:
-        HF_TOKEN: ${{ secrets.HF_TOKEN }}
-      run: |
-        # Set up authenticated remote URL using your repository secret
-        git remote add hf https://oauth2:$HF_TOKEN@huggingface.co/spaces/sohail435/saas-churn-retention-engine
-        # Configure throwaway CI user identity for the runner environment
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.email "actions@github.com"
+        git config --global user.name "GitHub Actions Pipeline"
         
-        # Force push the clean, LFS-tracked repository structure live
-        git push hf main --force
+        # Use git credential helper to securely inject the token on runtime
+        git config --global credential.helper store
+        echo "https://sohail435:${{ secrets.HF_TOKEN }}@huggingface.co" > ~/.git-credentials
         
-        # git remote add hf https://sohail435:$HF_TOKEN@huggingface.co/spaces/sohail435/saas-churn-retention-engine
+        # Safely execute the push to your remote space
+        git push --force https://huggingface.co/spaces/sohail435/saas-churn-retention-engine main
