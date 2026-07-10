@@ -66,11 +66,12 @@ jobs:
         HF_TOKEN: ${{ secrets.HF_TOKEN }}
       run: |
         # Set up authenticated remote URL using your repository secret
-        git remote add hf https://sohail435:$HF_TOKEN@huggingface.co/spaces/sohail435/saas-churn-retention-engine
-        
+        git remote add hf https://oauth2:$HF_TOKEN@huggingface.co/spaces/sohail435/saas-churn-retention-engine
         # Configure throwaway CI user identity for the runner environment
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         
         # Force push the clean, LFS-tracked repository structure live
         git push hf main --force
+        
+        # git remote add hf https://sohail435:$HF_TOKEN@huggingface.co/spaces/sohail435/saas-churn-retention-engine
