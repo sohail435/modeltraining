@@ -1,4 +1,4 @@
-name: MLOps Quality Assurance Pipeline
+name: MLOps Quality Assurance & Deployment Pipeline
 
 on:
   push:
@@ -40,3 +40,28 @@ jobs:
     - name: Verify Dockerfile Build Compilation
       run: |
         docker build -t saas-churn-app:test .
+
+  # =========================================================================
+  # NEW: Continuous Deployment (CD) Job
+  # =========================================================================
+  deploy-to-production:
+    runs-on: ubuntu-latest
+    needs: docker-build-verification
+    # Only deploy on direct pushes to main (skips deployment for PR test runs)
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Checkout Code Repository with Git LFS
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        lfs: true # Ensures your .joblib models are downloaded correctly
+
+    - name: Push Container Infrastructure to Hugging Face Hub
+      uses: huggingface/hub-sync@v0.1.0
+      with:
+        github_repo_id: ${{ github.repository }}
+        huggingface_repo_id: sohail435/saas-churn-retention-engine
+        hf_token: ${{ secrets.HF_TOKEN }}
+        repo_type: space
+        space_sdk: docker
